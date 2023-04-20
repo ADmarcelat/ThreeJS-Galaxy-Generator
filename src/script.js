@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import * as dat from "lil-gui";
 
 /**
@@ -18,14 +19,15 @@ const scene = new THREE.Scene();
  */
 const parameters = {};
 parameters.count = 100000;
-parameters.size = 0.01;
-parameters.radius = 5;
+parameters.size = 0.02;
+parameters.radius = 4;
 parameters.branches = 5;
-parameters.spin = 1;
-parameters.randomness = 0.2;
+parameters.spin = 3;
+parameters.randomness = 0.3;
 parameters.randomnessPower = 3;
-parameters.insideColor = "#ff6306";
-parameters.outsideColor = "#1b3984";
+parameters.insideColor = "#1cca50";
+parameters.outsideColor = "#0a27ff";
+parameters.rotating = 0.5;
 
 let geometry = null;
 let material = null;
@@ -108,6 +110,9 @@ const generateGalaxy = () => {
   scene.add(points);
 };
 
+//Fonts
+const fontLoader = new FontLoader();
+
 gui
   .add(parameters, "count")
   .min(100)
@@ -151,6 +156,12 @@ gui
   .add(parameters, "randomnessPower")
   .min(1)
   .max(10)
+  .step(0.01)
+  .onFinishChange(generateGalaxy);
+gui
+  .add(parameters, "rotating")
+  .min(0)
+  .max(1)
   .step(0.01)
   .onFinishChange(generateGalaxy);
 gui.addColor(parameters, "insideColor").onFinishChange(generateGalaxy);
@@ -215,7 +226,9 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
-    
+
+  points.rotation.y = elapsedTime * parameters.rotating;
+
   // Update controls
   controls.update();
 
